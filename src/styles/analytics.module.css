@@ -1,0 +1,113 @@
+/* Analytics module – premium glassmorphic styling for chart components */
+
+:root {
+  --bg-glass: rgba(15, 23, 42, 0.65);
+  --glass-blur: blur(24px);
+  --border-glass: rgba(255, 255, 255, 0.08);
+  --primary: #8b5cf6; /* violet */
+  --secondary: #06b6d4; /* cyan */
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+}
+
+/* ChartCard container */
+.chartCard {
+  background: var(--bg-glass);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.chartCard:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.title {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--text-main);
+  margin: 0;
+}
+.filterSelect {
+  background: rgba(255,255,255,0.04);
+  color: var(--text-main);
+  border: 1px solid var(--border-glass);
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.filterSelect:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: var(--primary);
+}
+
+.chartContent {
+  width: 100%;
+  height: 100%;
+}
+
+/* Custom tooltip styling */
+.customTooltip {
+  background: rgba(0, 0, 0, 0.85);
+  color: var(--text-main);
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  font-size: 0.85rem;
+}
+.tooltipLabel {
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+.tooltipValue {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Custom legend for pie chart */
+.customLegend {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.legendColorBox {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.legendLabel {
+  color: var(--text-main);
+}
+
+/* Bar chart grid lines */
+.recharts-cartesian-grid line {
+  stroke: rgba(255,255,255,0.07);
+}
+
+/* Ensure responsive container respects padding */
+.recharts-responsive-container {
+  min-height: 300px;
+}
