@@ -1,0 +1,45 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-color);
+  padding-top: var(--nav-height); /* So navbar doesn't cover content */
+}
+
+.leftSide {
+  flex: 1.2; /* Takes slightly more space on desktop for the hero */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.rightSide {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: var(--bg-color);
+  z-index: 10;
+}
+
+@media (max-width: 968px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .leftSide {
+    flex: none;
+    min-height: 40vh;
+    padding-bottom: 2rem;
+  }
+  
+  .rightSide {
+    flex: none;
+    min-height: 60vh;
+    padding: 1rem 1.5rem 3rem;
+    align-items: flex-start;
+  }
+}
