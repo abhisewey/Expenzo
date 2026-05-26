@@ -1,7 +1,7 @@
 import React, { useContext, useState, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { ExpenseContext } from '../../context/ExpenseContext';
-import { getMonthlySpending, filterExpensesByPeriod } from '../../utils/analyticsHelpers';
+import { groupTransactionsForBarChart } from '../../utils/dateHelpers';
 import ChartCard from './ChartCard';
 import styles from '../../styles/analytics.module.css';
 
@@ -11,16 +11,18 @@ import styles from '../../styles/analytics.module.css';
  *   - filterOptions: dropdown options (e.g., All Time, Last 12 months)
  *   - defaultFilter: default selection
  */
-const MonthlyBarChart = ({ filterOptions = [], defaultFilter = '6months' }) => {
+const DEFAULT_FILTER_OPTIONS = [
+  { value: 'this_month', label: 'This Month' },
+  { value: 'previous_month', label: 'Previous Month' },
+  { value: 'last_3_months', label: 'Last 3 Months' },
+  { value: 'this_year', label: 'This Year' }
+];
+
+const MonthlyBarChart = ({ filterOptions = DEFAULT_FILTER_OPTIONS, defaultFilter = 'this_month' }) => {
   const { expenses } = useContext(ExpenseContext);
   const [filter, setFilter] = useState(defaultFilter);
 
-  const filteredExpenses = useMemo(
-    () => filterExpensesByPeriod(expenses, filter),
-    [expenses, filter]
-  );
-
-  const data = useMemo(() => getMonthlySpending(filteredExpenses, 6), [filteredExpenses]);
+  const data = useMemo(() => groupTransactionsForBarChart(expenses, filter), [expenses, filter]);
 
   const handleFilterChange = (e) => setFilter(e.target.value);
 

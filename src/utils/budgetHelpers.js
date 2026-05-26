@@ -2,13 +2,29 @@
 // Helper for storing and retrieving budgets per category in localStorage.
 // Budgets shape: { [categoryId]: { limit: number, spent: number } }
 
+const getStorageKey = () => {
+  try {
+    const sessionStr = localStorage.getItem('expenzo_session');
+    if (sessionStr) {
+      const user = JSON.parse(sessionStr);
+      if (user && user.email) {
+        return `budgets_${user.email}`;
+      }
+    }
+  } catch (e) {
+    // Ignore error
+  }
+  return 'expenzo_budgets'; // Fallback
+};
+
 /**
  * Get all budgets from localStorage.
  * Returns an object mapping categoryId to { limit, spent }.
  */
 export const getBudgets = () => {
   try {
-    const data = localStorage.getItem('expenzo_budgets');
+    const key = getStorageKey();
+    const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : {};
   } catch (e) {
     console.error('Failed to parse budgets from localStorage', e);
@@ -20,7 +36,8 @@ export const getBudgets = () => {
  * Save budgets object to localStorage.
  */
 export const setBudgets = (budgets) => {
-  localStorage.setItem('expenzo_budgets', JSON.stringify(budgets));
+  const key = getStorageKey();
+  localStorage.setItem(key, JSON.stringify(budgets));
 };
 
 /**
@@ -45,11 +62,11 @@ export const recalculateSpent = (expenses) => {
   // reset spent counters
   Object.keys(budgets).forEach((cat) => (budgets[cat].spent = 0));
   expenses.forEach((exp) => {
-    const { categoryId, amount } = exp;
-    if (!budgets[categoryId]) {
-      budgets[categoryId] = { limit: 0, spent: 0 };
+    const { category, amount } = exp;
+    if (!budgets[category]) {
+      budgets[category] = { limit: 0, spent: 0 };
     }
-    budgets[categoryId].spent += Number(amount);
+    budgets[category].spent += Number(amount);
   });
   setBudgets(budgets);
 };

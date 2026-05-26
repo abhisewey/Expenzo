@@ -1,52 +1,40 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useExpense } from '../../context/ExpenseContext';
+import { groupTransactionsForBarChart } from '../../utils/dateHelpers';
 import styles from '../../styles/components/dashboard.module.css';
 
 const SpendingOverview = () => {
   const { transactions, stats } = useExpense();
 
-  // Compute actual spending of the last 6 calendar months dynamically from transaction state
+  const [filter, setFilter] = useState('this_month');
+
+  // Compute actual spending dynamically using robust date helpers
   const monthlySpending = useMemo(() => {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const spendingMap = {};
+    const rawData = groupTransactionsForBarChart(transactions, filter);
     
-    // Auto-generate last 6 months timeline anchors
-    const now = new Date();
-    const last6Months = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthLabel = months[d.getMonth()];
-      const yearVal = d.getFullYear();
-      const key = `${monthLabel} ${yearVal}`;
-      last6Months.push({ key, label: monthLabel, amount: 0 });
-      spendingMap[key] = 0;
-    }
-
-    // Accumulate transaction values matching key month anchors
-    transactions.filter(t => t.type === 'expense').forEach(txn => {
-      const d = new Date(txn.date);
-      const monthLabel = months[d.getMonth()];
-      const yearVal = d.getFullYear();
-      const key = `${monthLabel} ${yearVal}`;
-      if (spendingMap[key] !== undefined) {
-        spendingMap[key] += Number(txn.amount);
-      }
-    });
-
     // Extract maximum value to determine dynamic chart heights
     let maxSpent = 0;
-    last6Months.forEach(m => {
-      m.amount = spendingMap[m.key];
-      if (m.amount > maxSpent) maxSpent = m.amount;
+    rawData.forEach(m => {
+      if (m.value > maxSpent) maxSpent = m.value;
     });
 
     // Construct final percentages heights for CSS rendering
-    return last6Months.map(m => ({
-      label: m.label,
-      amount: m.amount,
-      value: maxSpent > 0 ? Math.round((m.amount / maxSpent) * 100) : 0
-    }));
-  }, [transactions]);
+    return rawData.map(m => {
+      let label = m.month;
+      // Shorten label for UI if needed
+      if (label.includes('Week')) {
+        label = `W${label.split(' ')[1]}`;
+      } else if (label.includes(' ')) {
+        label = label.split(' ')[0]; // Extract just the month name (e.g. "Jan" from "Jan 2026")
+      }
+      
+      return {
+        label: label,
+        amount: m.value,
+        value: maxSpent > 0 ? Math.round((m.value / maxSpent) * 100) : 0
+      };
+    });
+  }, [transactions, filter]);
 
   // Compute true running average
   const monthlyAverage = useMemo(() => {
@@ -54,26 +42,34 @@ const SpendingOverview = () => {
     const total = monthlySpending.reduce((sum, item) => sum + item.amount, 0);
     return Math.round(total / monthlySpending.length);
   }, [monthlySpending]);
+  
+  const totalSpent = useMemo(() => {
+    return monthlySpending.reduce((sum, item) => sum + item.amount, 0);
+  }, [monthlySpending]);
 
   return (
     <div className={styles.card}>
       <div className={styles.sectionHeader}>
         <h2 className={styles.sectionTitle}>Spending Overview</h2>
-        <select className={styles.filterSelect} defaultValue="6M">
-          <option value="1M">This Month</option>
-          <option value="3M">Last 3 Months</option>
-          <option value="6M">Last 6 Months</option>
-          <option value="1Y">This Year</option>
+        <select 
+          className={styles.filterSelect} 
+          value={filter} 
+          onChange={(e) => setFilter(e.target.value)}
+        >
+          <option value="this_month">This Month</option>
+          <option value="previous_month">Previous Month</option>
+          <option value="last_3_months">Last 3 Months</option>
+          <option value="this_year">This Year</option>
         </select>
       </div>
 
       <div className={styles.miniStats}>
         <div className={styles.miniStat}>
-          <span className={styles.miniStatLabel}>Total Spent (6M)</span>
-          <span className={styles.miniStatValue}>₹{stats.totalExpenses.toLocaleString('en-IN')}</span>
+          <span className={styles.miniStatLabel}>Total Spent</span>
+          <span className={styles.miniStatValue}>₹{totalSpent.toLocaleString('en-IN')}</span>
         </div>
         <div className={styles.miniStat}>
-          <span className={styles.miniStatLabel}>Average / Month</span>
+          <span className={styles.miniStatLabel}>Average</span>
           <span className={styles.miniStatValue}>₹{monthlyAverage.toLocaleString('en-IN')}</span>
         </div>
       </div>

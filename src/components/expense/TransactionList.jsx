@@ -1,57 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useExpense } from '../../context/ExpenseContext';
+import { filterTransactionsByDateRange } from '../../utils/dateHelpers';
 import TransactionCard from './TransactionCard';
 import EmptyState from './EmptyState';
 import ConfirmDialog from './ConfirmDialog';
 import styles from '../../styles/expense.module.css';
-import { FiSearch, FiFilter, FiCalendar } from 'react-icons/fi';
+import { FiSearch, FiFilter, FiCalendar, FiClock } from 'react-icons/fi';
 import { expenseCategories, incomeCategories } from '../../data/categories';
+
+/**
+ * Period labels for context-aware empty state messages
+ */
+const PERIOD_LABELS = {
+  all: 'All Time',
+  this_month: 'This Month',
+  previous_month: 'Previous Month',
+  last_3_months: 'Last 3 Months',
+  this_year: 'This Year',
+};
 
 const TransactionList = ({ onEdit, onAddClick }) => {
   const { transactions, deleteExpense } = useExpense();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [sortBy, setSortBy] = useState('newest'); // 'newest', 'oldest', 'amount-high', 'amount-low'
-  const [deleteId, setDeleteId] = useState(null); // Track transaction queued for deletion confirmation
+  const [sortBy, setSortBy] = useState('newest');
+  const [timeFilter, setTimeFilter] = useState('this_month');
+  const [deleteId, setDeleteId] = useState(null);
 
-  // Construct dynamic category anchors automatically
-  const allCategories = ['all', ...new Set([...expenseCategories, ...incomeCategories].map(c => c.name))];
+  // Construct dynamic category anchors automatically — memoized
+  const allCategories = useMemo(
+    () => ['all', ...new Set([...expenseCategories, ...incomeCategories].map(c => c.name))],
+    []
+  );
 
-  // Filtering & Sorting evaluation
-  const filteredAndSorted = transactions
-    .filter(txn => {
-      const matchesSearch = 
-        txn.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        txn.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (txn.merchant && txn.merchant.toLowerCase().includes(searchQuery.toLowerCase()));
+  // Apply time filter first, then search/category/sort — all memoized
+  const filteredAndSorted = useMemo(() => {
+    // Step 1: Time filter via dateHelpers (handles edge cases, leap years, etc.)
+    let result = timeFilter === 'all'
+      ? [...transactions]
+      : filterTransactionsByDateRange(transactions, timeFilter);
 
-      const matchesCategory = 
-        selectedCategory === 'all' ? true : txn.category === selectedCategory;
+    // Step 2: Search filter
+    if (searchQuery) {
+      const lower = searchQuery.toLowerCase();
+      result = result.filter(txn =>
+        txn.title.toLowerCase().includes(lower) ||
+        txn.category.toLowerCase().includes(lower) ||
+        (txn.merchant && txn.merchant.toLowerCase().includes(lower))
+      );
+    }
 
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'newest') {
-        return new Date(b.date) - new Date(a.date);
-      }
-      if (sortBy === 'oldest') {
-        return new Date(a.date) - new Date(b.date);
-      }
-      if (sortBy === 'amount-high') {
-        return Number(b.amount) - Number(a.amount);
-      }
-      if (sortBy === 'amount-low') {
-        return Number(a.amount) - Number(b.amount);
-      }
+    // Step 3: Category filter
+    if (selectedCategory !== 'all') {
+      result = result.filter(txn => txn.category === selectedCategory);
+    }
+
+    // Step 4: Sort
+    result.sort((a, b) => {
+      if (sortBy === 'newest') return new Date(b.date) - new Date(a.date);
+      if (sortBy === 'oldest') return new Date(a.date) - new Date(b.date);
+      if (sortBy === 'amount-high') return Number(b.amount) - Number(a.amount);
+      if (sortBy === 'amount-low') return Number(a.amount) - Number(b.amount);
       return 0;
     });
 
-  const handleConfirmDelete = () => {
+    return result;
+  }, [transactions, searchQuery, selectedCategory, sortBy, timeFilter]);
+
+  const handleConfirmDelete = useCallback(() => {
     if (deleteId) {
       deleteExpense(deleteId);
       setDeleteId(null);
     }
-  };
+  }, [deleteId, deleteExpense]);
 
   return (
     <div className={styles.listContainer}>
@@ -69,6 +90,22 @@ const TransactionList = ({ onEdit, onAddClick }) => {
         </div>
 
         <div className={styles.listFilters}>
+          {/* Time Filter Dropdown */}
+          <div className={styles.filterDropdownWrapper}>
+            <FiClock className={styles.filterIconInside} />
+            <select 
+              className={styles.listSelect}
+              value={timeFilter}
+              onChange={(e) => setTimeFilter(e.target.value)}
+            >
+              <option value="all">All Time</option>
+              <option value="this_month">This Month</option>
+              <option value="previous_month">Previous Month</option>
+              <option value="last_3_months">Last 3 Months</option>
+              <option value="this_year">This Year</option>
+            </select>
+          </div>
+
           {/* Category Dropdown Selector */}
           <div className={styles.filterDropdownWrapper}>
             <FiFilter className={styles.filterIconInside} />
@@ -104,7 +141,11 @@ const TransactionList = ({ onEdit, onAddClick }) => {
       {/* Dynamic Scrollable Area */}
       <div className={styles.listScrollArea}>
         {filteredAndSorted.length === 0 ? (
-          <EmptyState onAddClick={onAddClick} />
+          <EmptyState
+            onAddClick={onAddClick}
+            periodLabel={PERIOD_LABELS[timeFilter] || 'this period'}
+            hasTransactions={transactions.length > 0}
+          />
         ) : (
           <div className={styles.listGrid}>
             {filteredAndSorted.map((txn, index) => (

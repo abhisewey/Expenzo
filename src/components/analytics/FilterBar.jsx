@@ -126,7 +126,9 @@ const FilterBar = ({ onFiltersChange }) => {
           className={styles.select}
         >
           <option value="this_month">This Month</option>
+          <option value="previous_month">Previous Month</option>
           <option value="last_3_months">Last 3 Months</option>
+          <option value="this_year">This Year</option>
           <option value="custom">Custom</option>
         </select>
         {dateRange === 'custom' && (
