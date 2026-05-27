@@ -1,5 +1,5 @@
-import React, { useContext, useState, useMemo } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import React, { useContext, useMemo } from 'react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { ExpenseContext } from '../../context/ExpenseContext';
 import { groupExpensesByCategory } from '../../utils/dateHelpers';
 import ChartCard from './ChartCard';
@@ -13,20 +13,12 @@ import { expenseCategories, incomeCategories } from '../../data/categories';
  *  - filterOptions: array of { value, label } (e.g., [{value:'all',label:'All Time'},{value:'month',label:'This Month'}])
  *  - defaultFilter: default selected value
  */
-const DEFAULT_FILTER_OPTIONS = [
-  { value: 'this_month', label: 'This Month' },
-  { value: 'previous_month', label: 'Previous Month' },
-  { value: 'last_3_months', label: 'Last 3 Months' },
-  { value: 'this_year', label: 'This Year' }
-];
-
-const ExpensePieChart = ({ filterOptions = DEFAULT_FILTER_OPTIONS, defaultFilter = 'this_month' }) => {
-  const { expenses } = useContext(ExpenseContext);
-  const [filter, setFilter] = useState(defaultFilter);
+const ExpensePieChart = () => {
+  const { expenses, activeTimeFilter } = useContext(ExpenseContext);
 
   const filteredAndGrouped = useMemo(
-    () => groupExpensesByCategory(expenses, filter),
-    [expenses, filter]
+    () => groupExpensesByCategory(expenses, activeTimeFilter),
+    [expenses, activeTimeFilter]
   );
 
   const data = useMemo(() => {
@@ -42,7 +34,6 @@ const ExpensePieChart = ({ filterOptions = DEFAULT_FILTER_OPTIONS, defaultFilter
       };
     });
   }, [filteredAndGrouped]);
-  const COLORS = data.map((d) => d.color);
 
   const renderCustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
@@ -57,35 +48,7 @@ const ExpensePieChart = ({ filterOptions = DEFAULT_FILTER_OPTIONS, defaultFilter
     return null;
   };
 
-  const renderCustomLegend = (props) => {
-    const { payload } = props;
-    return (
-      <ul className={styles.customLegend} style={{ display: 'grid', gap: '0.5rem', padding: '1rem', listStyle: 'none', margin: 0 }}>
-        {payload.map((entry, index) => {
-          const { color, payload: dataItem } = entry;
-          const Icon = dataItem.icon || FiDollarSign;
-          return (
-            <li key={`item-${index}`} className={styles.legendItem} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <div style={{ background: `${color}20`, color, padding: '8px', borderRadius: '8px', display: 'flex' }}>
-                  <Icon size={16} />
-                </div>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>{dataItem.name}</span>
-              </div>
-              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>₹{dataItem.value.toLocaleString()}</span>
-                <span style={{ color: 'var(--text-muted)', width: '45px', textAlign: 'right' }}>{dataItem.percentage}%</span>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    );
-  };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-  };
 
   const getPeriodLabel = (f) => {
     switch (f) {
@@ -100,36 +63,58 @@ const ExpensePieChart = ({ filterOptions = DEFAULT_FILTER_OPTIONS, defaultFilter
   return (
     <ChartCard
       title="Expense Distribution"
-      filterOptions={filterOptions}
-      onFilterChange={handleFilterChange}
     >
       {data.length === 0 ? (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '300px', color: 'var(--text-muted)' }}>
-          No expenses found for {getPeriodLabel(filter)}.
+          No expenses found for {getPeriodLabel(activeTimeFilter)}.
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              dataKey="value"
-              nameKey="name"
-              data={data}
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              innerRadius={60}
-              labelLine={false}
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-              isAnimationActive={true}
-            >
-              {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-            <Tooltip content={renderCustomTooltip} />
-            <Legend content={renderCustomLegend} />
-          </PieChart>
-        </ResponsiveContainer>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%' }}>
+          <div style={{ height: '240px', width: '100%' }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  dataKey="value"
+                  nameKey="name"
+                  data={data}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={100}
+                  innerRadius={70}
+                  labelLine={false}
+                  label={false}
+                  isAnimationActive={true}
+                  stroke="none"
+                >
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} stroke="none" />
+                  ))}
+                </Pie>
+                <Tooltip content={renderCustomTooltip} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '100%', padding: '0 0.5rem' }}>
+            {data.map((dataItem, index) => {
+              const Icon = dataItem.icon || FiDollarSign;
+              return (
+                <div key={`item-${index}`} className={styles.legendItem} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                    <div style={{ background: `${dataItem.color}15`, color: dataItem.color, padding: '8px', borderRadius: '8px', display: 'flex' }}>
+                      <Icon size={18} />
+                    </div>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 500, fontSize: '1rem' }}>{dataItem.name}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                    <span style={{ color: 'var(--text-primary)', fontWeight: 600, fontSize: '1rem' }}>₹{dataItem.value.toLocaleString('en-IN')}</span>
+                    <span style={{ color: 'var(--text-muted)', width: '45px', textAlign: 'right', fontSize: '0.95rem' }}>{dataItem.percentage}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       )}
     </ChartCard>
   );

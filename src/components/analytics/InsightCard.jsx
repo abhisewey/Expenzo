@@ -17,12 +17,12 @@ const InsightCard = ({ icon: Icon, metric, subtitle, trend, bgColor }) => {
   const trendColor = isPositive ? 'var(--trend-positive)' : 'var(--trend-negative)';
 
   return (
-    <div className={styles.insightCard} style={{ backgroundColor: bgColor ? `${bgColor}22` : 'rgba(255,255,255,0.02)' }}>
-      <div className={styles.iconWrapper}>
+    <div className={styles.insightCard} style={{ backgroundColor: bgColor ? `${bgColor}15` : 'rgba(255,255,255,0.02)' }}>
+      <div className={styles.iconWrapper} style={{ color: bgColor || 'var(--text-main)', backgroundColor: bgColor ? `${bgColor}25` : 'rgba(255,255,255,0.05)' }}>
         <Icon className={styles.insightIcon} />
       </div>
-      <div className={styles.metric}>{metric}</div>
-      <div className={styles.subtitle}>{subtitle}</div>
+      <div className={styles.metric} title={metric}>{metric}</div>
+      <div className={styles.subtitle} title={subtitle}>{subtitle}</div>
       {typeof trend === 'number' && (
         <div className={styles.trend} style={{ color: trendColor }}>
           <TrendIcon /> {Math.abs(trend)}%

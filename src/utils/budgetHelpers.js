@@ -11,7 +11,7 @@ const getStorageKey = () => {
         return `budgets_${user.email}`;
       }
     }
-  } catch (e) {
+  } catch {
     // Ignore error
   }
   return 'expenzo_budgets'; // Fallback
@@ -26,8 +26,8 @@ export const getBudgets = () => {
     const key = getStorageKey();
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : {};
-  } catch (e) {
-    console.error('Failed to parse budgets from localStorage', e);
+  } catch {
+    console.error('Failed to parse budgets from localStorage');
     return {};
   }
 };

@@ -1,4 +1,3 @@
-import { formatCurrency } from './formatCurrency';
 
 /**
  * Returns an array of category totals for a given list of expenses.

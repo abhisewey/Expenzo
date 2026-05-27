@@ -122,8 +122,8 @@ export const groupTransactionsByMonth = (transactions, rangeType) => {
   
   // Loop until we pass the end month/year
   while (currentY < endYear || (currentY === endYear && currentM <= endMonth)) {
-    // Format: 'Jan 2026' or 'Jan' based on preference. Including year guarantees uniqueness
-    const key = `${monthNames[currentM]} ${currentY}`;
+    // Format: 'Jan', 'Feb' for cleaner bar chart labels
+    const key = monthNames[currentM];
     dataMap.set(key, { name: key, income: 0, expense: 0 });
     
     currentM++;
@@ -137,8 +137,7 @@ export const groupTransactionsByMonth = (transactions, rangeType) => {
   filtered.forEach(t => {
     const d = new Date(t.date);
     const m = d.getMonth();
-    const y = d.getFullYear();
-    const key = `${monthNames[m]} ${y}`;
+    const key = monthNames[m];
     
     if (dataMap.has(key)) {
       const entry = dataMap.get(key);
@@ -185,8 +184,8 @@ export const groupTransactionsForBarChart = (transactions, rangeType) => {
     const year = targetDate.getFullYear();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     
-    const numWeeks = Math.ceil(daysInMonth / 7);
-    for (let i = 1; i <= numWeeks; i++) {
+    // Always show 5 weeks to cover up to 31 days
+    for (let i = 1; i <= 5; i++) {
       dataMap.set(`Week ${i}`, { month: `Week ${i}`, value: 0 });
     }
     
@@ -207,6 +206,19 @@ export const groupTransactionsForBarChart = (transactions, rangeType) => {
       dataMap.set(g.name, { month: g.name, value: g.expense });
     });
   }
-  
   return Array.from(dataMap.values());
+};
+
+export const formatTime = (dateString) => {
+  if (!dateString || dateString.length <= 10) return '12:00 PM';
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return '12:00 PM';
+  return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+};
+
+export const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return dateString; 
+  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 };

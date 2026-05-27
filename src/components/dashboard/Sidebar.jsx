@@ -38,7 +38,7 @@ const Sidebar = ({ isOpen, closeMobileMenu }) => {
         <nav className={styles.navMenu}>
           <div className={styles.navSection}>MENU</div>
           
-          <NavLink to="/dashboard" className={({isActive}) => `${styles.navItem} ${isActive ? styles.active : ''}`} onClick={closeMobileMenu}>
+          <NavLink to="/dashboard" end className={({isActive}) => `${styles.navItem} ${isActive ? styles.active : ''}`} onClick={closeMobileMenu}>
             <FiHome className={styles.navIcon} /> Dashboard
           </NavLink>
           

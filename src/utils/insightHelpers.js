@@ -17,11 +17,11 @@ export const getHighestSpendingCategory = (expenses) => {
  */
 export const getAverageDailySpend = (expenses, rangeType = 'this_month') => {
   if (!expenses.length) return '0.00';
-  
+
   // Determine days in the active period
   let daysInPeriod = 30; // default
   const now = new Date();
-  
+
   if (rangeType === 'this_month') {
     daysInPeriod = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   } else if (rangeType === 'previous_month') {
@@ -31,7 +31,7 @@ export const getAverageDailySpend = (expenses, rangeType = 'this_month') => {
   } else if (rangeType === 'this_year') {
     daysInPeriod = (now.getFullYear() % 4 === 0) ? 366 : 365;
   }
-  
+
   const total = expenses.reduce((sum, e) => sum + Number(e.amount), 0);
   return (total / daysInPeriod).toFixed(2);
 };
@@ -67,17 +67,17 @@ export const getMostFrequentMethod = (expenses) => {
  */
 export const getSpendingTrend = (expenses, allExpenses, rangeType = 'this_month') => {
   if (rangeType !== 'this_month') return { percent: 0 };
-  
+
   const now = new Date();
   const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const prevExpenses = allExpenses.filter((e) => {
     const d = new Date(e.date);
     return e.type === 'expense' && d.getFullYear() === prevMonth.getFullYear() && d.getMonth() === prevMonth.getMonth();
   });
-  
+
   const sumCurr = expenses.reduce((s, e) => s + Number(e.amount), 0);
   const sumPrev = prevExpenses.reduce((s, e) => s + Number(e.amount), 0);
-  
+
   if (!sumPrev) return { percent: 0 };
   const change = ((sumCurr - sumPrev) / sumPrev) * 100;
   return { percent: change.toFixed(1) };

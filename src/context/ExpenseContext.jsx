@@ -3,10 +3,10 @@ import { saveToLocalStorage, getFromLocalStorage } from '../utils/localStorage';
 import { generateId } from '../utils/generateId';
 import { useAuth } from './AuthContext';
 import { expenseCategories, incomeCategories } from '../data/categories';
-import { getBudgets, setBudgets, updateBudgetLimit, recalculateSpent, getProgress } from '../utils/budgetHelpers';
+import { getBudgets, recalculateSpent, updateBudgetLimit } from '../utils/budgetHelpers';
 import { filterTransactionsByDateRange } from '../utils/dateHelpers';
 
-const ExpenseContext = createContext();
+export const ExpenseContext = createContext();
 
 export const useExpense = () => {
   return useContext(ExpenseContext);

@@ -4,7 +4,7 @@ import { groupTransactionsForBarChart } from '../../utils/dateHelpers';
 import styles from '../../styles/components/dashboard.module.css';
 
 const SpendingOverview = () => {
-  const { transactions, stats } = useExpense();
+  const { transactions } = useExpense();
 
   const [filter, setFilter] = useState('this_month');
 

@@ -1,5 +1,5 @@
-import React, { useContext, useMemo, useState, useCallback } from 'react';
-import { FiTrendingUp, FiDollarSign, FiTruck, FiCreditCard, FiArrowUpRight, FiArrowDownRight, FiTag } from 'react-icons/fi';
+import React, { useContext, useMemo } from 'react';
+import { FiTrendingUp, FiDollarSign, FiTruck, FiCreditCard, FiArrowUpRight, FiTag } from 'react-icons/fi';
 import { ExpenseContext } from '../../context/ExpenseContext';
 import InsightCard from './InsightCard';
 import styles from '../../styles/analytics.module.css';
@@ -29,27 +29,24 @@ const PERIOD_LABELS = {
  * Uses useMemo for all expensive computations.
  */
 const InsightsPanel = () => {
-  const { expenses, transactions } = useContext(ExpenseContext);
-  const [filter, setFilter] = useState('this_month');
+  const { expenses, transactions, activeTimeFilter } = useContext(ExpenseContext);
 
   // Pre-filter expenses by the active time range — memoized
   const filteredExpenses = useMemo(
-    () => filterTransactionsByDateRange(expenses, filter),
-    [expenses, filter]
+    () => filterTransactionsByDateRange(expenses, activeTimeFilter),
+    [expenses, activeTimeFilter]
   );
 
   // All insight computations — memoized on filtered data
   const insights = useMemo(() => {
-    const periodLabel = PERIOD_LABELS[filter] || 'Selected Period';
+    const periodLabel = PERIOD_LABELS[activeTimeFilter] || 'Selected Period';
 
     // Edge case: no filtered expenses
     if (!filteredExpenses.length) {
       return [
-        { icon: FiTag, metric: '-', subtitle: `No spending in ${periodLabel}`, trend: null, bgColor: 'var(--primary)' },
         { icon: FiDollarSign, metric: '₹0', subtitle: `Avg Daily Spend (${periodLabel})`, trend: null, bgColor: 'var(--secondary)' },
         { icon: FiTruck, metric: '₹0', subtitle: 'No expenses recorded', trend: null, bgColor: '#f97316' },
         { icon: FiCreditCard, metric: '-', subtitle: 'No payment data', trend: null, bgColor: '#34d399' },
-        { icon: FiArrowUpRight, metric: '0%', subtitle: 'Spending Trend', trend: 0, bgColor: '#10b981' },
         { icon: FiTrendingUp, metric: 'Save ₹0', subtitle: 'Add expenses to unlock insights', trend: null, bgColor: '#60a5fa' },
       ];
     }
@@ -67,7 +64,7 @@ const InsightsPanel = () => {
     };
 
     // Average daily spend — respects active period length
-    const avgDaily = getAverageDailySpend(filteredExpenses, filter);
+    const avgDaily = getAverageDailySpend(filteredExpenses, activeTimeFilter);
 
     // Biggest single expense in period
     const biggest = getBiggestExpense(filteredExpenses);
@@ -76,19 +73,12 @@ const InsightsPanel = () => {
     const method = getMostFrequentMethod(filteredExpenses);
 
     // Spending trend vs previous month (only meaningful for this_month)
-    const trend = getSpendingTrend(filteredExpenses, transactions, filter);
+    const trend = getSpendingTrend(filteredExpenses, transactions, activeTimeFilter);
 
     // Savings opportunity from period data
     const savings = getSavingsOpportunity(filteredExpenses);
 
     return [
-      {
-        icon: FiTag,
-        metric: `${highest.name} (${highest.percent}%)`,
-        subtitle: `Top Category (${periodLabel})`,
-        trend: null,
-        bgColor: 'var(--primary)',
-      },
       {
         icon: FiDollarSign,
         metric: `₹${Number(avgDaily).toLocaleString()}`,
@@ -111,13 +101,6 @@ const InsightsPanel = () => {
         bgColor: '#34d399',
       },
       {
-        icon: FiArrowUpRight,
-        metric: `${trend.percent}%`,
-        subtitle: filter === 'this_month' ? 'Trend vs Last Month' : `Trend (${periodLabel})`,
-        trend: Number(trend.percent),
-        bgColor: trend.percent >= 0 ? '#10b981' : '#ef4444',
-      },
-      {
         icon: FiTrendingUp,
         metric: `Save ₹${Number(savings.reduction).toLocaleString()}`,
         subtitle: `Savings Opportunity (${savings.category})`,
@@ -125,35 +108,14 @@ const InsightsPanel = () => {
         bgColor: '#60a5fa',
       },
     ];
-  }, [filteredExpenses, filter, transactions]);
+  }, [filteredExpenses, activeTimeFilter, transactions]);
 
-  // Memoized filter change handler
-  const handleFilterChange = useCallback((e) => {
-    setFilter(e.target.value);
-  }, []);
 
   return (
-    <div className={styles.insightsPanel}>
-      {/* Time filter dropdown — unified with all analytics components */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '1rem' }}>
-        <h3 className={styles.title} style={{ margin: 0 }}>Smart Insights</h3>
-        <select
-          className={styles.filterSelect}
-          value={filter}
-          onChange={handleFilterChange}
-          style={{ minWidth: '140px' }}
-        >
-          <option value="this_month">This Month</option>
-          <option value="previous_month">Previous Month</option>
-          <option value="last_3_months">Last 3 Months</option>
-          <option value="this_year">This Year</option>
-        </select>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', width: '100%' }}>
-        {insights.map((insight, idx) => (
-          <InsightCard key={idx} {...insight} />
-        ))}
-      </div>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '1.25rem', width: '100%' }}>
+      {insights.map((insight, idx) => (
+        <InsightCard key={idx} {...insight} />
+      ))}
     </div>
   );
 };
