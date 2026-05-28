@@ -1,21 +1,29 @@
-:root {
+:root,
+[data-theme="dark"] {
   /* Colors */
   --bg-color: #0f172a;
-  --card-bg: rgba(17, 24, 39, 0.7);
+  --bg-primary: #0f172a;
+  --card-bg: var(--card-bg);
   --accent-primary: #8b5cf6;
   --accent-secondary: #06b6d4;
   --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   --text-main: #f8fafc;
+  --text-primary: #f8fafc;
   --text-muted: #94a3b8;
+  --text-secondary: #94a3b8;
   --success: #10b981;
   --error: #f43f5e;
   --warning: #f59e0b;
+  --primary-color: #8b5cf6;
   
   /* Glassmorphism Tokens */
   --glass-bg: rgba(17, 24, 39, 0.65);
   --glass-blur: blur(16px);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+  --glass-border: 1px solid var(--hover-bg);
   --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --border-subtle: var(--hover-bg);
+  --hover-bg: var(--hover-bg);
+  --input-bg: var(--hover-bg);
 
   /* Typography */
   --font-main: 'Inter', system-ui, sans-serif;
@@ -23,6 +31,31 @@
   
   /* Layout */
   --nav-height: 72px;
+}
+
+[data-theme="light"] {
+  --bg-color: #f1f5f9;
+  --bg-primary: var(--text-main);
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --accent-primary: #7c3aed;
+  --accent-secondary: #0891b2;
+  --accent-gradient: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  --text-main: #0f172a;
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --text-secondary: #64748b;
+  --success: #059669;
+  --error: #e11d48;
+  --warning: #d97706;
+  --primary-color: #7c3aed;
+
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-blur: blur(16px);
+  --glass-border: 1px solid rgba(0, 0, 0, 0.06);
+  --glass-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --hover-bg: rgba(0, 0, 0, 0.03);
+  --input-bg: rgba(0, 0, 0, 0.03);
 }
 
 * {
@@ -38,6 +71,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -74,10 +108,61 @@ button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-subtle);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Premium Micro-interactions */
+.hover-lift {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow);
+}
+
+.button-scale {
+  transition: transform 0.15s ease;
+}
+
+.button-scale:active {
+  transform: scale(0.96);
+}
+
+/* Loading Skeletons */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--hover-bg) 25%, var(--border-subtle) 50%, var(--hover-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite linear;
+  border-radius: 8px;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+.animated-float {
+  animation: float 4s ease-in-out infinite;
+}
+

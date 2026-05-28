@@ -48,7 +48,7 @@
   font-weight: 800;
   line-height: 1.1;
   margin-bottom: 1.5rem;
-  background: linear-gradient(to right, #ffffff, #94a3b8);
+  background: linear-gradient(to right, var(--text-main), #94a3b8);
     -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -68,7 +68,7 @@
 
 .typingText::after {
   content: '|';
-  -webkit-text-fill-color: white;
+  -webkit-text-fill-color: var(--text-main);
   animation: blink 1s infinite step-start;
 }
 
@@ -95,7 +95,7 @@
   background: rgba(17, 24, 39, 0.65);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hover-bg);
   padding: 1.25rem 1.5rem;
   border-radius: 20px;
   display: flex;

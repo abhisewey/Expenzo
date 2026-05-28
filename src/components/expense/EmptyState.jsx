@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from '../../styles/expense.module.css';
 import { FiPlus, FiTrendingUp, FiInbox } from 'react-icons/fi';
 

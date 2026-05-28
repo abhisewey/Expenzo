@@ -17,8 +17,8 @@ const InsightCard = ({ icon: Icon, metric, subtitle, trend, bgColor }) => {
   const trendColor = isPositive ? 'var(--trend-positive)' : 'var(--trend-negative)';
 
   return (
-    <div className={styles.insightCard} style={{ backgroundColor: bgColor ? `${bgColor}15` : 'rgba(255,255,255,0.02)' }}>
-      <div className={styles.iconWrapper} style={{ color: bgColor || 'var(--text-main)', backgroundColor: bgColor ? `${bgColor}25` : 'rgba(255,255,255,0.05)' }}>
+    <div className={styles.insightCard} style={{ backgroundColor: bgColor ? `${bgColor}15` : 'var(--hover-bg)' }}>
+      <div className={styles.iconWrapper} style={{ color: bgColor || 'var(--text-main)', backgroundColor: bgColor ? `${bgColor}25` : 'var(--hover-bg)' }}>
         <Icon className={styles.insightIcon} />
       </div>
       <div className={styles.metric} title={metric}>{metric}</div>

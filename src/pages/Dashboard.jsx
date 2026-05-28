@@ -1,9 +1,8 @@
-import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 import SummaryCards from '../components/dashboard/SummaryCards';
 import SpendingOverview from '../components/dashboard/SpendingOverview';
-import CategoryBreakdown from '../components/dashboard/CategoryBreakdown';
 import RecentTransactions from '../components/dashboard/RecentTransactions';
+import CategoryRingChart from '../components/dashboard/CategoryRingChart';
 import styles from '../styles/components/dashboard.module.css';
 
 const Dashboard = () => {
@@ -14,6 +13,7 @@ const Dashboard = () => {
       <SummaryCards />
       
       <div className={styles.mainGrid}>
+        {/* Left column: Spending trends + recent activity */}
         <div className={styles.leftColumn}>
           <SpendingOverview />
           <RecentTransactions 
@@ -21,8 +21,10 @@ const Dashboard = () => {
             onAddClick={onAddClick}
           />
         </div>
+
+        {/* Right column: Category expense distribution ring chart */}
         <div className={styles.rightColumn}>
-          <CategoryBreakdown />
+          <CategoryRingChart />
         </div>
       </div>
     </>

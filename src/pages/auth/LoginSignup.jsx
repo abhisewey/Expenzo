@@ -1,4 +1,3 @@
-import React from 'react';
 import HeroSection from '../../components/auth/HeroSection/HeroSection';
 import AuthCard from '../../components/auth/AuthCard/AuthCard';
 import styles from './LoginSignup.module.css';

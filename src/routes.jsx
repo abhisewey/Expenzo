@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import DashboardLayout from './components/layout/DashboardLayout';
@@ -6,7 +5,9 @@ import LoginSignup from './pages/auth/LoginSignup';
 import Dashboard from './pages/Dashboard';
 import Transactions from './pages/dashboard/Transactions';
 import Analytics from './pages/dashboard/Analytics';
-import Wallets from './pages/dashboard/Wallets';
+import Budgets from './pages/dashboard/Budgets';
+import Categories from './pages/dashboard/Categories';
+import Settings from './pages/dashboard/Settings';
 import Navbar from './components/common/Navbar/Navbar';
 import Footer from './components/common/Footer/Footer';
 
@@ -18,7 +19,7 @@ const AppRoutes = () => {
                            location.pathname.startsWith('/transactions') ||
                            location.pathname.startsWith('/goals') ||
                            location.pathname.startsWith('/settings') ||
-                           location.pathname.startsWith('/wallets');
+                           location.pathname.startsWith('/budgets');
 
   return (
     <>
@@ -34,7 +35,9 @@ const AppRoutes = () => {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/analytics" element={<Analytics />} />
-            <Route path="/wallets" element={<Wallets />} />
+            <Route path="/budgets" element={<Budgets />} />
+            <Route path="/categories" element={<Categories />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
           
           {/* Catch all to redirect to auth */}

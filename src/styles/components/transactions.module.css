@@ -5,13 +5,13 @@
   border-radius: 1.5rem;
   overflow: hidden;
   box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hover-bg);
 }
 
 .header {
   padding: 2rem;
   background: linear-gradient(145deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.95) 100%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--hover-bg);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
@@ -45,9 +45,9 @@
 .filterChip {
   padding: 0.5rem 1.25rem;
   border-radius: 2rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
   color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-subtle);
   cursor: pointer;
   white-space: nowrap;
   font-weight: 500;
@@ -55,12 +55,12 @@
 }
 
 .filterChip:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border-subtle);
 }
 
 .filterChip.active {
   background: var(--primary-color);
-  color: white;
+  color: var(--text-main);
   border-color: var(--primary-color);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 }
@@ -78,7 +78,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--hover-bg);
   z-index: 10;
 }
 
@@ -93,7 +93,7 @@
 .monthSummary {
   font-size: 0.875rem;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
 }
@@ -110,11 +110,11 @@
   padding: 1.25rem 2rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--hover-bg);
 }
 
 .transactionCard:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hover-bg);
   padding-left: 2.25rem;
 }
 
@@ -170,7 +170,7 @@
   text-transform: uppercase;
   font-weight: 700;
   letter-spacing: 0.05em;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
 }
 
 .meta {

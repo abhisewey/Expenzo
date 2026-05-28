@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react-hooks/set-state-in-effect */
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { saveToLocalStorage, getFromLocalStorage } from '../utils/localStorage';
 import { generateId } from '../utils/generateId';
 import { useAuth } from './AuthContext';
 import { expenseCategories, incomeCategories } from '../data/categories';
-import { getBudgets, recalculateSpent, updateBudgetLimit } from '../utils/budgetHelpers';
 import { filterTransactionsByDateRange } from '../utils/dateHelpers';
 
 export const ExpenseContext = createContext();
@@ -24,43 +25,50 @@ const seedTransactions = [
   { id: 's8', title: 'Freelance Design', merchant: 'Upwork Client', category: 'Freelance', amount: 24500, type: 'income', date: '2026-05-15', status: 'Completed', paymentMethod: 'Bank Transfer' }
 ];
 
+
+
+// Default seed custom categories (extends the static ones stored in data/categories.js)
+const seedCustomCategories = [];
+
 export const ExpenseProvider = ({ children }) => {
   const [transactions, setTransactions] = useState([]);
   const [toast, setToast] = useState(null);
-  const [budgets, setBudgetsState] = useState({});
-  const [wallets, setWallets] = useState([]);
+  // budgets: payment-method account balances (UPI, Cash, Credit Card, etc.)
+  const [budgets, setBudgets] = useState([]);
+
+  // customCategories: user-defined categories persisted to localStorage
+  const [customCategories, setCustomCategories] = useState([]);
   const [userSettings, setUserSettings] = useState({ income: 0, currency: 'INR', theme: 'dark' });
   const [filters, setFilters] = useState({ search: '', categories: [], methods: [], dateRange: 'this_month', customFrom: null, customTo: null, amountRange: [0, Infinity], sort: 'latest' });
-  // Loading state for user-switch transitions — prevents stale data flash
+  // Loading state for user-switch transitions
   const [isLoading, setIsLoading] = useState(true);
   // Shared active time filter for cross-component synchronization
   const [activeTimeFilter, setActiveTimeFilter] = useState('this_month');
   // Track previous user to detect user switches
   const prevUserRef = useRef(null);
   const { user } = useAuth();
-  // Derived expenses array (filtered from transactions)
+
+  // Derived expenses array
   const expenses = useMemo(() =>
     transactions.filter(t => t.type === 'expense'),
     [transactions]
   );
-  
-  // Dynamic localStorage key generator
+
+  // Dynamic localStorage key generator — scoped per user email
   const getUserKey = useCallback((type) => {
     if (!user || !user.email) return null;
     return `${type}_${user.email}`;
   }, [user]);
 
-  // Memoize storage keys to prevent unnecessary re-renders
   const keys = useMemo(() => ({
     transactions: getUserKey('transactions'),
-    budgets: getUserKey('budgets'),
-    wallets: getUserKey('wallets'),
+    budgets: getUserKey('wallets'),       // kept as 'wallets' for backward compat
+    customCategories: getUserKey('custom_categories'),
     settings: getUserKey('settings')
   }), [getUserKey]);
 
-  // Load functions that automatically scope to current user
+  // Load all user data on mount / user switch
   const loadUserData = useCallback(() => {
-    // Detect user switch — show loading indicator during transition
     const currentEmail = user?.email || null;
     const isUserSwitch = prevUserRef.current !== currentEmail;
     if (isUserSwitch) {
@@ -71,55 +79,42 @@ export const ExpenseProvider = ({ children }) => {
     if (keys.transactions) {
       const storedTxns = getFromLocalStorage(keys.transactions, null);
       if (storedTxns === null) {
-        // First-time user: seed with onboarding data
         setTransactions(seedTransactions);
         saveToLocalStorage(keys.transactions, seedTransactions);
       } else {
         setTransactions(storedTxns);
       }
-      
-      // Load budgets, wallets, settings — fully scoped to this user
-      setBudgetsState(getFromLocalStorage(keys.budgets, {}));
-      setWallets(getFromLocalStorage(keys.wallets, []));
+
+      setBudgets(getFromLocalStorage(keys.budgets, []));
+
+      setCustomCategories(getFromLocalStorage(keys.customCategories, seedCustomCategories));
       setUserSettings(getFromLocalStorage(keys.settings, { income: 0, currency: 'INR', theme: 'dark' }));
     } else {
-      // Safe fallback to empty state for new/logged-out users
       setTransactions([]);
-      setBudgetsState({});
-      setWallets([]);
+      setBudgets([]);
+      setCustomCategories([]);
       setUserSettings({ income: 0, currency: 'INR', theme: 'dark' });
     }
 
-    // Reset time filter on user switch to prevent stale filter state
     if (isUserSwitch) {
       setActiveTimeFilter('this_month');
-      // Brief delay to allow React batch updates to flush before hiding loader
       requestAnimationFrame(() => setIsLoading(false));
     }
   }, [keys, user]);
 
-  // Load data on mount or when user changes
   useEffect(() => {
     loadUserData();
   }, [loadUserData]);
 
-  // Persist to localStorage whenever core data updates
+  // Persist all state to localStorage on change
   useEffect(() => {
-    if (keys.transactions && transactions.length > 0) {
-      saveToLocalStorage(keys.transactions, transactions);
-    }
-    if (keys.budgets) {
-      saveToLocalStorage(keys.budgets, budgets);
-    }
-    if (keys.wallets) {
-      saveToLocalStorage(keys.wallets, wallets);
-    }
-    if (keys.settings) {
-      saveToLocalStorage(keys.settings, userSettings);
-    }
-  }, [transactions, budgets, wallets, userSettings, keys]);
+    if (keys.transactions && transactions.length > 0) saveToLocalStorage(keys.transactions, transactions);
+    if (keys.budgets) saveToLocalStorage(keys.budgets, budgets);
+    if (keys.customCategories) saveToLocalStorage(keys.customCategories, customCategories);
+    if (keys.settings) saveToLocalStorage(keys.settings, userSettings);
+  }, [transactions, budgets, customCategories, userSettings, keys]);
 
-  // Toast controls — useCallback-wrapped for referential stability
+  // ─── Toast helpers ────────────────────────────────────────────────────────
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type });
   }, []);
@@ -128,9 +123,8 @@ export const ExpenseProvider = ({ children }) => {
     setToast(null);
   }, []);
 
-  // CRUD Operations — wrapped in useCallback to prevent child re-renders
+  // ─── Transaction CRUD ─────────────────────────────────────────────────────
   const addExpense = useCallback((txnData) => {
-    // Guard against future dates — clamp to today if ahead
     const today = new Date().toISOString().substring(0, 10);
     const txnDate = txnData.date && txnData.date > today ? today : txnData.date;
     const newTxn = {
@@ -144,7 +138,7 @@ export const ExpenseProvider = ({ children }) => {
   }, [showToast]);
 
   const updateExpense = useCallback((id, updatedData) => {
-    setTransactions(prev => 
+    setTransactions(prev =>
       prev.map(txn => (txn.id === id ? { ...txn, ...updatedData, updatedAt: new Date().toISOString() } : txn))
     );
     showToast('Transaction updated successfully!', 'success');
@@ -155,7 +149,40 @@ export const ExpenseProvider = ({ children }) => {
     showToast('Transaction deleted successfully!', 'success');
   }, [showToast]);
 
-  // Derived analytics – memoized for performance
+
+
+  // ─── Category CRUD ────────────────────────────────────────────────────────
+  const addCustomCategory = useCallback((catData) => {
+    const newCat = { ...catData, id: generateId(), isCustom: true, createdAt: new Date().toISOString() };
+    setCustomCategories(prev => [...prev, newCat]);
+    showToast('Category created!', 'success');
+    return newCat;
+  }, [showToast]);
+
+  const updateCustomCategory = useCallback((id, updatedData) => {
+    setCustomCategories(prev => prev.map(c => c.id === id ? { ...c, ...updatedData } : c));
+    showToast('Category updated!', 'success');
+  }, [showToast]);
+
+  const deleteCustomCategory = useCallback((id) => {
+    setCustomCategories(prev => prev.filter(c => c.id !== id));
+    showToast('Category deleted.', 'info');
+  }, [showToast]);
+
+
+
+  // ─── All available categories (static + custom) ───────────────────────────
+  const allExpenseCategories = useMemo(() => [
+    ...expenseCategories,
+    ...customCategories.filter(c => c.type === 'expense')
+  ], [customCategories]);
+
+  const allIncomeCategories = useMemo(() => [
+    ...incomeCategories,
+    ...customCategories.filter(c => c.type === 'income')
+  ], [customCategories]);
+
+  // ─── Derived analytics ────────────────────────────────────────────────────
   const stats = useMemo(() => {
     let totalIncome = 0;
     let totalExpenses = 0;
@@ -166,21 +193,20 @@ export const ExpenseProvider = ({ children }) => {
     });
     const totalBalance = totalIncome - totalExpenses;
     const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
-    // Category breakdown for analytics
+    const allCats = [...expenseCategories, ...incomeCategories, ...customCategories];
     const expenseByCategory = {};
     transactions.filter(t => t.type === 'expense').forEach(txn => {
       expenseByCategory[txn.category] = (expenseByCategory[txn.category] || 0) + Number(txn.amount);
     });
     const categoryBreakdown = Object.entries(expenseByCategory).map(([cat, amt]) => {
-      const cfg = [...expenseCategories, ...incomeCategories].find(c => c.name === cat) || { color: '#94a3b8' };
+      const cfg = allCats.find(c => c.name === cat) || { color: '#94a3b8' };
       return { category: cat, amount: amt, percentage: totalExpenses ? Math.round((amt / totalExpenses) * 100) : 0, color: cfg.color };
     }).sort((a, b) => b.amount - a.amount);
     return { totalIncome, totalExpenses, totalBalance, savingsRate: savingsRate.toFixed(1), categoryBreakdown };
-  }, [transactions]);
+  }, [transactions, customCategories]);
 
-  // Filtered transactions based on UI filters
+  // ─── Filtered transactions ────────────────────────────────────────────────
   const filteredTransactions = useMemo(() => {
-    // Simple filter logic – can be expanded using filterHelpers
     const { search, categories, methods, dateRange, customFrom, customTo, amountRange, sort } = filters;
     let result = [...transactions];
     if (search) {
@@ -189,14 +215,12 @@ export const ExpenseProvider = ({ children }) => {
     }
     if (categories.length) result = result.filter(t => categories.includes(t.category));
     if (methods.length) result = result.filter(t => methods.includes(t.paymentMethod));
-    // Date range handling via dateHelpers
     if (dateRange && dateRange !== 'custom') {
       result = filterTransactionsByDateRange(result, dateRange);
     } else if (dateRange === 'custom') {
       const start = customFrom ? new Date(customFrom) : null;
       const end = customTo ? new Date(customTo) : null;
       if (start && end) {
-        // Normalize end date to end of day for inclusive filtering
         end.setHours(23, 59, 59, 999);
         result = result.filter(t => {
           const d = new Date(t.date);
@@ -204,13 +228,11 @@ export const ExpenseProvider = ({ children }) => {
         });
       }
     }
-    // Amount range
     const [minAmt, maxAmt] = amountRange;
     result = result.filter(t => {
       const val = Number(t.amount);
       return val >= minAmt && val <= maxAmt;
     });
-    // Sorting
     if (sort === 'latest') result.sort((a, b) => new Date(b.date) - new Date(a.date));
     else if (sort === 'oldest') result.sort((a, b) => new Date(a.date) - new Date(b.date));
     else if (sort === 'high') result.sort((a, b) => Number(b.amount) - Number(a.amount));
@@ -218,53 +240,24 @@ export const ExpenseProvider = ({ children }) => {
     return result;
   }, [transactions, filters]);
 
-  // Budget operations wrappers — memoized
-  const updateBudget = useCallback((categoryId, newLimit) => {
-    updateBudgetLimit(categoryId, newLimit);
-    const updated = getBudgets();
-    setBudgetsState(updated);
-  }, []);
-
-  const recalcBudgets = useCallback(() => {
-    recalculateSpent(transactions);
-    setBudgetsState(getBudgets());
-  }, [transactions]);
-
-  // Watch transactions to recompute budgets automatically
-  useEffect(() => {
-    recalcBudgets();
-  }, [recalcBudgets]);
-
-  // Memoize context value to prevent unnecessary downstream re-renders
+  // ─── Context value ────────────────────────────────────────────────────────
   const value = useMemo(() => ({
-    expenses,
-    transactions,
-    filteredTransactions,
-    stats,
-    budgets,
-    wallets,
-    userSettings,
-    filters,
-    setFilters,
-    updateBudget,
-    recalcBudgets,
-    toast,
-    showToast,
-    hideToast,
-    addExpense,
-    updateExpense,
-    deleteExpense,
-    setWallets,
-    setUserSettings,
-    // New: loading and time filter state for cross-component use
-    isLoading,
-    activeTimeFilter,
-    setActiveTimeFilter,
+    expenses, transactions, filteredTransactions, stats,
+    budgets, setBudgets,
+    customCategories, allExpenseCategories, allIncomeCategories,
+    addCustomCategory, updateCustomCategory, deleteCustomCategory,
+    userSettings, setUserSettings,
+    filters, setFilters,
+    toast, showToast, hideToast,
+    addExpense, updateExpense, deleteExpense,
+    isLoading, activeTimeFilter, setActiveTimeFilter,
   }), [
-    expenses, transactions, filteredTransactions, stats, budgets, wallets,
-    userSettings, filters, updateBudget, recalcBudgets, toast, showToast,
-    hideToast, addExpense, updateExpense, deleteExpense, isLoading,
-    activeTimeFilter
+    expenses, transactions, filteredTransactions, stats,
+    budgets,
+    customCategories, allExpenseCategories, allIncomeCategories,
+    addCustomCategory, updateCustomCategory, deleteCustomCategory,
+    userSettings, filters, toast, showToast,
+    hideToast, addExpense, updateExpense, deleteExpense, isLoading, activeTimeFilter
   ]);
 
   return (

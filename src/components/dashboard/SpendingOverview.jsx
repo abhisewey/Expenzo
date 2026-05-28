@@ -1,16 +1,14 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useExpense } from '../../context/ExpenseContext';
 import { groupTransactionsForBarChart } from '../../utils/dateHelpers';
 import styles from '../../styles/components/dashboard.module.css';
 
 const SpendingOverview = () => {
-  const { transactions } = useExpense();
-
-  const [filter, setFilter] = useState('this_month');
+  const { transactions, activeTimeFilter, setActiveTimeFilter } = useExpense();
 
   // Compute actual spending dynamically using robust date helpers
   const monthlySpending = useMemo(() => {
-    const rawData = groupTransactionsForBarChart(transactions, filter);
+    const rawData = groupTransactionsForBarChart(transactions, activeTimeFilter);
     
     // Extract maximum value to determine dynamic chart heights
     let maxSpent = 0;
@@ -34,7 +32,7 @@ const SpendingOverview = () => {
         value: maxSpent > 0 ? Math.round((m.value / maxSpent) * 100) : 0
       };
     });
-  }, [transactions, filter]);
+  }, [transactions, activeTimeFilter]);
 
   // Compute true running average
   const monthlyAverage = useMemo(() => {
@@ -53,8 +51,8 @@ const SpendingOverview = () => {
         <h2 className={styles.sectionTitle}>Spending Overview</h2>
         <select 
           className={styles.filterSelect} 
-          value={filter} 
-          onChange={(e) => setFilter(e.target.value)}
+          value={activeTimeFilter} 
+          onChange={(e) => setActiveTimeFilter(e.target.value)}
         >
           <option value="this_month">This Month</option>
           <option value="previous_month">Previous Month</option>

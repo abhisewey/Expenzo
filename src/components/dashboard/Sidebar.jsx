@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { FiHome, FiPieChart, FiCreditCard, FiCrosshair, FiFolder, FiBriefcase, FiLogOut } from 'react-icons/fi';
+import { FiHome, FiPieChart, FiCreditCard, FiBriefcase, FiLogOut } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/components/dashboard.module.css';
 
@@ -51,15 +51,7 @@ const Sidebar = ({ isOpen, closeMobileMenu }) => {
           </NavLink>
           
           <NavLink to="/budgets" className={({isActive}) => `${styles.navItem} ${isActive ? styles.active : ''}`} onClick={closeMobileMenu}>
-            <FiCrosshair className={styles.navIcon} /> Budgets
-          </NavLink>
-          
-          <NavLink to="/wallets" className={({isActive}) => `${styles.navItem} ${isActive ? styles.active : ''}`} onClick={closeMobileMenu}>
-            <FiBriefcase className={styles.navIcon} /> Wallets
-          </NavLink>
-          
-          <NavLink to="/categories" className={({isActive}) => `${styles.navItem} ${isActive ? styles.active : ''}`} onClick={closeMobileMenu}>
-            <FiFolder className={styles.navIcon} /> Categories
+            <FiBriefcase className={styles.navIcon} /> Budgets
           </NavLink>
         </nav>
 

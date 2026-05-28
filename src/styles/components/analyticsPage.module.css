@@ -34,7 +34,7 @@
   font-family: var(--font-heading);
   color: var(--text-primary);
   margin: 0;
-  background: linear-gradient(90deg, #fff, #a78bfa);
+  background: linear-gradient(90deg, var(--text-main), #a78bfa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -53,7 +53,7 @@
 
 .statCard {
   background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hover-bg);
   border-radius: 1.5rem;
   padding: 1.75rem;
   display: flex;
@@ -92,7 +92,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -162,7 +162,7 @@
 
 .globalFilterSelect {
   background: rgba(30, 41, 59, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-subtle);
   color: var(--text-primary);
   padding: 0.75rem 1.5rem;
   border-radius: 1rem;

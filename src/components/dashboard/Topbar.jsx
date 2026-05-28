@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiMenu, FiBell, FiSearch } from 'react-icons/fi';
+import { FiMenu, FiBell } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import styles from '../../styles/components/dashboard.module.css';
 
@@ -20,13 +20,8 @@ const Topbar = ({ toggleSidebar }) => {
         <button className={styles.mobileMenuBtn} onClick={toggleSidebar}>
           <FiMenu />
         </button>
-        <div className={styles.searchContainer}>
-          <FiSearch className={styles.searchIcon} />
-          <input 
-            type="text" 
-            placeholder="Search transactions, budgets..." 
-            className={styles.searchInput} 
-          />
+        <div style={{ marginLeft: '1rem', fontWeight: 600, color: 'var(--text-main)', display: 'none' }} className={styles.desktopOnlyTitle}>
+          Overview
         </div>
       </div>
 

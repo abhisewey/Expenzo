@@ -16,8 +16,8 @@
 .modalContent {
   width: 100%;
   max-width: 580px;
-  background: rgba(17, 24, 39, 0.95);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.1);
   overflow: hidden;
@@ -45,7 +45,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.75rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--hover-bg);
   background: rgba(255, 255, 255, 0.01);
 }
 
@@ -64,8 +64,8 @@
 
 .closeBtn {
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   width: 36px;
   height: 36px;
   border-radius: 50%;
@@ -79,8 +79,8 @@
 
 .closeBtn:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--hover-bg);
+  border-color: var(--border-subtle);
   transform: rotate(90deg);
 }
 
@@ -95,7 +95,7 @@
   width: 6px;
 }
 .modalBody::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
   border-radius: 4px;
 }
 
@@ -109,8 +109,8 @@
 /* Segmented Controller (Expense/Income Toggle) */
 .typeSelector {
   display: flex;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 12px;
   padding: 0.3rem;
   gap: 0.3rem;
@@ -162,8 +162,8 @@
 .inputField {
   width: 100%;
   padding: 1rem 1rem 1rem 2.75rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 14px;
   color: var(--text-main);
   font-size: 0.95rem;
@@ -174,7 +174,7 @@
 
 /* Floating label focus states */
 .inputField:focus {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--hover-bg);
   border-color: #8b5cf6;
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
 }
@@ -250,8 +250,8 @@
 .selectField {
   width: 100%;
   padding: 0.9rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 14px;
   color: var(--text-main);
   font-size: 0.95rem;
@@ -288,8 +288,8 @@
 .datePicker {
   width: 100%;
   padding: 0.9rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 14px;
   color: var(--text-main);
   font-size: 0.95rem;
@@ -312,8 +312,8 @@
 .textareaField {
   width: 100%;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 14px;
   color: var(--text-main);
   font-size: 0.95rem;
@@ -359,8 +359,8 @@
 
 .cancelBtn {
   padding: 0.9rem 1.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   color: var(--text-muted);
   font-weight: 600;
   font-size: 0.95rem;
@@ -370,14 +370,14 @@
 }
 
 .cancelBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
   color: var(--text-main);
 }
 
 .submitBtn {
   padding: 0.9rem 2rem;
   background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-  color: white;
+  color: var(--text-main);
   font-weight: 600;
   font-size: 0.95rem;
   border-radius: 14px;
@@ -397,7 +397,7 @@
 }
 
 .submitBtn:disabled {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
   color: var(--text-muted);
   box-shadow: none;
   cursor: not-allowed;
@@ -413,10 +413,10 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  background: rgba(17, 24, 39, 0.9);
+  background: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--hover-bg);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px rgba(139, 92, 246, 0.05);
   z-index: 2000;
@@ -488,7 +488,7 @@
 
 .toastClose:hover {
   color: var(--text-main);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
 }
 
 /* ================= TRANSACTION LIST STYLING ================= */
@@ -524,8 +524,8 @@
 .listSearchInput {
   width: 100%;
   padding: 0.85rem 1rem 0.85rem 2.85rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 14px;
   color: var(--text-main);
   font-size: 0.95rem;
@@ -534,7 +534,7 @@
 }
 
 .listSearchInput:focus {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--hover-bg);
   border-color: #8b5cf6;
   box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
 }
@@ -562,8 +562,8 @@
 
 .listSelect {
   padding: 0.85rem 2.25rem 0.85rem 2.25rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 14px;
   color: var(--text-main);
   font-size: 0.9rem;
@@ -599,7 +599,7 @@
 }
 
 .listScrollArea::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--hover-bg);
   border-radius: 4px;
 }
 
@@ -616,7 +616,7 @@
   justify-content: space-between;
   padding: 1rem 1.5rem;
   background: rgba(17, 24, 39, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--hover-bg);
   border-radius: 18px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -626,8 +626,8 @@
 
 .txnCard:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.1);
-  background: rgba(17, 24, 39, 0.7);
+  border-color: var(--border-subtle);
+  background: var(--card-bg);
   box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.3), 0 0 20px rgba(139, 92, 246, 0.03);
 }
 
@@ -753,7 +753,7 @@
   font-size: 0.95rem;
   cursor: pointer;
   border: none;
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--hover-bg);
   color: var(--text-muted);
   transition: all 0.2s ease;
 }
@@ -778,7 +778,7 @@
   justify-content: center;
   padding: 3rem 1.5rem;
   background: rgba(255, 255, 255, 0.01);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border: 1px dashed var(--hover-bg);
   border-radius: 20px;
   text-align: center;
   max-width: 440px;
@@ -789,8 +789,8 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -828,7 +828,7 @@
   gap: 0.5rem;
   padding: 0.7rem 1.25rem;
   background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-  color: white;
+  color: var(--text-main);
   border-radius: 12px;
   border: none;
   font-weight: 600;
@@ -875,8 +875,8 @@
 .dialogContent {
   width: 100%;
   max-width: 440px;
-  background: rgba(17, 24, 39, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--hover-bg);
   border-radius: 20px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   padding: 1.75rem;
@@ -938,8 +938,8 @@
 
 .dialogCancelBtn {
   padding: 0.65rem 1.25rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--hover-bg);
+  border: 1px solid var(--hover-bg);
   color: var(--text-muted);
   font-weight: 600;
   font-size: 0.9rem;
@@ -949,14 +949,14 @@
 }
 
 .dialogCancelBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--hover-bg);
   color: var(--text-main);
 }
 
 .dialogConfirmBtn {
   padding: 0.65rem 1.5rem;
   background: #f43f5e;
-  color: white;
+  color: var(--text-main);
   font-weight: 600;
   font-size: 0.9rem;
   border-radius: 10px;
@@ -1000,7 +1000,7 @@
     flex: 1 1 100%;
     order: 3;
     padding: 0.5rem 0 0 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-top: 1px solid var(--hover-bg);
     justify-content: space-between;
     gap: 1rem;
   }

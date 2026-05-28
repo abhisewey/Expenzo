@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useExpense } from '../../context/ExpenseContext';
 import { filterTransactionsByDateRange } from '../../utils/dateHelpers';
 import TransactionCard from './TransactionCard';

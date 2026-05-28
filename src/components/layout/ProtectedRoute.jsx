@@ -1,4 +1,3 @@
-import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
@@ -10,7 +9,7 @@ const ProtectedRoute = ({ children }) => {
     // Global loading state for auth check
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#0f0f1a' }}>
-        <div style={{ color: '#ffffff', fontFamily: 'Inter, sans-serif', fontSize: '1.5rem', fontWeight: '500' }}>
+        <div style={{ color: 'var(--text-main)', fontFamily: 'Inter, sans-serif', fontSize: '1.5rem', fontWeight: '500' }}>
           Loading Expenzo...
         </div>
       </div>

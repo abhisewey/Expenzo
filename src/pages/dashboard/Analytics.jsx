@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useContext } from 'react';
 import { ExpenseContext } from '../../context/ExpenseContext';
 import MonthlyBarChart from '../../components/analytics/MonthlyBarChart';

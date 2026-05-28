@@ -74,8 +74,7 @@ const Navbar = () => {
         ) : (
           <>
             <Link to="/dashboard" className={styles.navLink}>Dashboard</Link>
-            <Link to="/reports" className={styles.navLink}>Reports</Link>
-            <Link to="/categories" className={styles.navLink}>Categories</Link>
+            <Link to="/budgets" className={styles.navLink}>Budgets</Link>
             
             {/* Mobile Actions for Authenticated */}
             <div className={styles.navActionsMobile}>

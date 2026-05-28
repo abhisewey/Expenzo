@@ -11,7 +11,7 @@
   background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--hover-bg);
   z-index: 1000;
   transition: all 0.3s ease;
 }
@@ -59,7 +59,7 @@
 
 .getStartedBtn {
   background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: white;
+  color: var(--text-main);
   padding: 0.6rem 1.5rem;
   border-radius: 8px;
   font-weight: 600;
@@ -88,7 +88,7 @@
   justify-content: center;
   font-weight: 600;
   font-size: 1.1rem;
-  color: white;
+  color: var(--text-main);
   user-select: none;
   cursor: pointer;
   border: 2px solid transparent;
@@ -112,12 +112,12 @@
   font-weight: 500;
   padding: 0.5rem 1rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-subtle);
   transition: all 0.2s ease;
 }
 
 .logoutBtn:hover {
-  color: white;
+  color: var(--text-main);
   background: rgba(244, 63, 94, 0.1);
   border-color: rgba(244, 63, 94, 0.3);
 }
@@ -155,12 +155,12 @@
     max-width: 80vw;
     flex-direction: column;
     justify-content: center;
-    background: rgba(17, 24, 39, 0.95);
+    background: var(--card-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 2rem;
     gap: 2rem;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 1px solid var(--hover-bg);
     transform: translateX(100%);
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -181,7 +181,7 @@
     gap: 1.5rem;
     margin-top: 1rem;
     padding-top: 2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-subtle);
   }
 
   .profileMenuMobile {

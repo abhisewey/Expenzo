@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useExpense } from '../../context/ExpenseContext';
 import { expenseCategories, incomeCategories } from '../../data/categories';
 import styles from '../../styles/expense.module.css';
@@ -33,48 +33,26 @@ const ExpenseForm = ({ onClose, transactionToEdit }) => {
     date: false
   });
 
-  const [errors, setErrors] = useState({});
-  const [isValid, setIsValid] = useState(false);
+  // Robust real-time active form validation schema calculated during render
+  const errors = {};
+  if (!formData.title.trim()) errors.title = 'Title is required';
+  else if (formData.title.trim().length < 3) errors.title = 'Title must be at least 3 characters';
+  
+  if (!formData.amount) errors.amount = 'Amount is required';
+  else if (isNaN(formData.amount) || Number(formData.amount) <= 0) errors.amount = 'Amount must be a positive number greater than 0';
+  
+  if (!formData.category) errors.category = 'Category is required';
+  if (!formData.date) errors.date = 'Date is required';
 
-  // Synchronize category select default anchors on mount ONLY if not editing
-  useEffect(() => {
+  const isValid = Object.keys(errors).length === 0;
+
+  const handleTypeChange = (newType) => {
+    setType(newType);
     if (!transactionToEdit) {
-      const categories = type === 'expense' ? expenseCategories : incomeCategories;
+      const categories = newType === 'expense' ? expenseCategories : incomeCategories;
       setFormData(prev => ({ ...prev, category: categories[0]?.name || '' }));
     }
-  }, [type, transactionToEdit]);
-
-  // Robust real-time active form validation schema
-  useEffect(() => {
-    const newErrors = {};
-    
-    // Title Validation
-    if (!formData.title.trim()) {
-      newErrors.title = 'Title is required';
-    } else if (formData.title.trim().length < 3) {
-      newErrors.title = 'Title must be at least 3 characters';
-    }
-
-    // Amount Validation
-    if (!formData.amount) {
-      newErrors.amount = 'Amount is required';
-    } else if (isNaN(formData.amount) || Number(formData.amount) <= 0) {
-      newErrors.amount = 'Amount must be a positive number greater than 0';
-    }
-
-    // Category Validation
-    if (!formData.category) {
-      newErrors.category = 'Category is required';
-    }
-
-    // Date Validation
-    if (!formData.date) {
-      newErrors.date = 'Date is required';
-    }
-
-    setErrors(newErrors);
-    setIsValid(Object.keys(newErrors).length === 0);
-  }, [formData]);
+  };
 
   const handleBlur = (field) => {
     setTouched(prev => ({ ...prev, [field]: true }));
